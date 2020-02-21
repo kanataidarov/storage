@@ -40,15 +40,14 @@ spring:
       enabled: false
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
-    url: jdbc:postgresql://localhost:5432/storage
-    username: storage
-    password:
+    url: jdbc:postgresql://localhost:12105/aglomer
+    username: aglomer
+    password: aglomer
     hikari:
       poolName: Hikari
       auto-commit: false
   jpa:
-    database-platform: io.github.jhipster.domain.util.FixedPostgreSQL95Dialect
-    database: POSTGRESQL
+    database-platform: io.github.jhipster.domain.util.FixedPostgreSQL10Dialect
     show-sql: false
     properties:
       hibernate.id.new_generator_mappings: true

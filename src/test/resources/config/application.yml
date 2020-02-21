@@ -31,9 +31,11 @@ spring:
     password:
     hikari:
       auto-commit: false
+  jackson:
+    serialization:
+      write-durations-as-timestamps: false
   jpa:
     database-platform: io.github.jhipster.domain.util.FixedH2Dialect
-    database: H2
     open-in-view: false
     show-sql: false
     hibernate:
@@ -104,7 +106,7 @@ jhipster:
     authentication:
       jwt:
         # This token must be encoded using Base64 (you can type `echo 'secret-key'|base64` on your command line)
-        base64-secret: OWU0ZGZkNDA2OTNmMzBmYTZhODhiODViOTNlYzgyYjBiZWQyZmE0YmZhZDY5YzI3ODcwNjQ3YmU1NjJiZTljZGEwYTA5ODQyMzhlMjU3Yzc3NmEyNTAzZmI2YzEzNWFkMDQ0NTRmNjQyZmY3Y2JkNzhlMmY2Y2QxMjc5YTEyYTM=
+        base64-secret: MmVmZWQ1MTA5YjFhNDExMjIxMGQ3YTdkNjM5NTI3NjE0ZTc5OGExNDA3NDU5NzY4YzYxNjg1MjZjYTUxMTBjY2JmYmQyNjAwN2JhMTFkNDY3M2FiMGRlZWUyN2NhYTY1ZjM1YjlmZTVlNTdkNTg5MjliYWFhMzAyYWUwYjM2ZjQ=
         # Token is valid 24 hours
         token-validity-in-seconds: 86400
     client-authorization:
