@@ -38,11 +38,22 @@ spring:
       enabled: false
     livereload:
       enabled: false
+  kafka:
+    consumer:
+      bootstrap-servers: localhost:9092
+      group-id: group_id
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    producer:
+      bootstrap-servers: localhost:9092
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
-    url: jdbc:postgresql://localhost:12105/aglomer
-    username: aglomer
-    password: aglomer
+    url: jdbc:postgresql://localhost:5432/storage
+    username: storage
+    password:
     hikari:
       poolName: Hikari
       auto-commit: false

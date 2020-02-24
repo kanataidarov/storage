@@ -8,41 +8,35 @@
             "fieldType": "String",
             "fieldValidateRules": [
                 "required",
-                "unique"
-            ]
-        },
-        {
-            "fieldName": "value",
-            "fieldType": "String",
-            "fieldValidateRules": [
-                "required"
-            ]
+                "unique",
+                "maxlength"
+            ],
+            "fieldValidateRulesMaxlength": "99"
         },
         {
             "fieldName": "created",
-            "fieldType": "ZonedDateTime",
+            "fieldType": "Instant",
             "fieldValidateRules": [
                 "required"
             ]
         },
         {
             "fieldName": "updated",
-            "fieldType": "ZonedDateTime",
+            "fieldType": "Instant",
             "fieldValidateRules": [
                 "required"
             ]
         },
         {
-            "fieldName": "group_id",
-            "fieldType": "BigDecimal",
-            "fieldValidateRules": []
+            "fieldName": "group",
+            "fieldType": "Long"
         }
     ],
-    "changelogDate": "20200221055828",
-    "dto": "no",
+    "changelogDate": "20200223111410",
+    "dto": "mapstruct",
     "searchEngine": "elasticsearch",
     "service": "serviceImpl",
-    "entityTableName": "properties",
+    "entityTableName": "property",
     "databaseType": "sql",
     "readOnly": false,
     "jpaMetamodelFiltering": false,

@@ -8,17 +8,16 @@ import javax.validation.constraints.*;
 
 import org.springframework.data.elasticsearch.annotations.FieldType;
 import java.io.Serializable;
-import java.math.BigDecimal;
-import java.time.ZonedDateTime;
+import java.time.Instant;
 
 /**
- * A Properties.
+ * A Property.
  */
 @Entity
-@Table(name = "properties")
+@Table(name = "property")
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
-@org.springframework.data.elasticsearch.annotations.Document(indexName = "properties")
-public class Properties implements Serializable {
+@org.springframework.data.elasticsearch.annotations.Document(indexName = "property")
+public class Property implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -28,23 +27,20 @@ public class Properties implements Serializable {
     private Long id;
 
     @NotNull
-    @Column(name = "name", nullable = false, unique = true)
+    @Size(max = 99)
+    @Column(name = "name", length = 99, nullable = false, unique = true)
     private String name;
 
     @NotNull
-    @Column(name = "value", nullable = false)
-    private String value;
-
-    @NotNull
     @Column(name = "created", nullable = false)
-    private ZonedDateTime created;
+    private Instant created;
 
     @NotNull
     @Column(name = "updated", nullable = false)
-    private ZonedDateTime updated;
+    private Instant updated;
 
-    @Column(name = "group_id", precision = 21, scale = 2)
-    private BigDecimal group_id;
+    @Column(name = "jhi_group")
+    private Long group;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
     public Long getId() {
@@ -59,7 +55,7 @@ public class Properties implements Serializable {
         return name;
     }
 
-    public Properties name(String name) {
+    public Property name(String name) {
         this.name = name;
         return this;
     }
@@ -68,56 +64,43 @@ public class Properties implements Serializable {
         this.name = name;
     }
 
-    public String getValue() {
-        return value;
-    }
-
-    public Properties value(String value) {
-        this.value = value;
-        return this;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
-    }
-
-    public ZonedDateTime getCreated() {
+    public Instant getCreated() {
         return created;
     }
 
-    public Properties created(ZonedDateTime created) {
+    public Property created(Instant created) {
         this.created = created;
         return this;
     }
 
-    public void setCreated(ZonedDateTime created) {
+    public void setCreated(Instant created) {
         this.created = created;
     }
 
-    public ZonedDateTime getUpdated() {
+    public Instant getUpdated() {
         return updated;
     }
 
-    public Properties updated(ZonedDateTime updated) {
+    public Property updated(Instant updated) {
         this.updated = updated;
         return this;
     }
 
-    public void setUpdated(ZonedDateTime updated) {
+    public void setUpdated(Instant updated) {
         this.updated = updated;
     }
 
-    public BigDecimal getGroup_id() {
-        return group_id;
+    public Long getGroup() {
+        return group;
     }
 
-    public Properties group_id(BigDecimal group_id) {
-        this.group_id = group_id;
+    public Property group(Long group) {
+        this.group = group;
         return this;
     }
 
-    public void setGroup_id(BigDecimal group_id) {
-        this.group_id = group_id;
+    public void setGroup(Long group) {
+        this.group = group;
     }
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here, do not remove
 
@@ -126,10 +109,10 @@ public class Properties implements Serializable {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof Properties)) {
+        if (!(o instanceof Property)) {
             return false;
         }
-        return id != null && id.equals(((Properties) o).id);
+        return id != null && id.equals(((Property) o).id);
     }
 
     @Override
@@ -139,13 +122,12 @@ public class Properties implements Serializable {
 
     @Override
     public String toString() {
-        return "Properties{" +
+        return "Property{" +
             "id=" + getId() +
             ", name='" + getName() + "'" +
-            ", value='" + getValue() + "'" +
             ", created='" + getCreated() + "'" +
             ", updated='" + getUpdated() + "'" +
-            ", group_id=" + getGroup_id() +
+            ", group=" + getGroup() +
             "}";
     }
 }

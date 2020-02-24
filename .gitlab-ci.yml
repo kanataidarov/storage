@@ -42,17 +42,17 @@ gradle-test:
             - build/jacoco/
         expire_in: 1 day
 
-gradle-integration-test:
-    stage: test
-    script:
-        - ./gradlew integrationTest -PnodeInstall --no-daemon
-    artifacts:
-        reports:
-            junit: build/test-results/integrationTest/TEST-*.xml
-        paths:
-            - build/test-results/
-            - build/jacoco/
-        expire_in: 1 day
+# gradle-integration-test:
+#     stage: test
+#     script:
+#         - ./gradlew integrationTest -PnodeInstall --no-daemon
+#     artifacts:
+#         reports:
+#             junit: build/test-results/integrationTest/TEST-*.xml
+#         paths:
+#             - build/test-results/
+#             - build/jacoco/
+#         expire_in: 1 day
 
 sonar-analyze:
     stage: analyze
@@ -60,9 +60,9 @@ sonar-analyze:
         - merge_requests
     dependencies:
         - gradle-test
-        - gradle-integration-test
+        # - gradle-integration-test
     script:
-        - ./gradlew sonarqube --no-daemon -Dsonar.organization=aglomer -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=668ef6120d5e1c3392fffaa74cb8882d240e0822
+        - ./gradlew sonarqube --no-daemon -Dsonar.organization=aglomer -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=d7473bd09d22bc626a9c67fab78c326426e21753
     allow_failure: true
 
 gradle-package:
@@ -83,4 +83,4 @@ docker-push:
     dependencies:
         - gradle-package
     script:
-        - ./gradlew jib -Pprod -Djib.to.image=$IMAGE_TAG -Djib.to.auth.username="gitlab-ci-token"  -Djib.to.auth.password=$CI_BUILD_TOKEN
+        - ./gradlew jib -Pprod -Djib.to.image=$IMAGE_TAG -Djib.to.auth.username="gitlab-ci-token" -Djib.to.auth.password=$CI_BUILD_TOKEN

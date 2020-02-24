@@ -137,8 +137,8 @@ project.ext.diffChangelogFile = "src/main/resources/config/liquibase/changelog/"
 liquibase {
     activities {
         main {
-            driver "org.h2.Driver"
-            url "jdbc:h2:file:./build/h2db/db/storage"
+            driver "org.postgresql.Driver"
+            url "jdbc:postgresql://localhost:5432/storage"
             username "storage"
             password ""
             changeLogFile "src/main/resources/config/liquibase/master.xml"
@@ -147,12 +147,12 @@ liquibase {
             classpath "src/main/resources/"
         }
         diffLog {
-            driver "org.h2.Driver"
-            url "jdbc:h2:file:./build/h2db/db/storage"
+            driver "org.postgresql.Driver"
+            url "jdbc:postgresql://localhost:5432/storage"
             username "storage"
             password ""
             changeLogFile project.ext.diffChangelogFile
-            referenceUrl "hibernate:spring:kz.kaznu.nmm.aglomer.domain?dialect=org.hibernate.dialect.H2Dialect&hibernate.physical_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy&hibernate.implicit_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy"
+            referenceUrl "hibernate:spring:kz.kaznu.nmm.aglomer.domain?dialect=io.github.jhipster.domain.util.FixedPostgreSQL10Dialect&hibernate.physical_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy&hibernate.implicit_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy"
             defaultSchemaName ""
             logLevel "debug"
             classpath "$buildDir/classes/java/main"
@@ -243,6 +243,7 @@ dependencies {
     // log4j2-mock needed to create embedded elasticsearch instance with SLF4J
     runtimeOnly "de.dentrassi.elasticsearch:log4j2-mock:${log4j2_mock_version}"
     // end of Spring Data Jest dependencies
+    implementation "org.apache.kafka:kafka-clients"
     implementation "org.springframework.boot:spring-boot-starter-security"
     implementation ("org.springframework.boot:spring-boot-starter-web") {
         exclude module: "spring-boot-starter-tomcat"
@@ -284,7 +285,7 @@ dependencies {
     testImplementation "com.tngtech.archunit:archunit-junit5-api:${archunit_junit5_version}"
     testRuntimeOnly "com.tngtech.archunit:archunit-junit5-engine:${archunit_junit5_version}"
     testImplementation "com.h2database:h2"
-    liquibaseRuntime "com.h2database:h2"
+    testImplementation "org.testcontainers:kafka"
     //jhipster-needle-gradle-dependency - JHipster will add additional dependencies here
 }
 

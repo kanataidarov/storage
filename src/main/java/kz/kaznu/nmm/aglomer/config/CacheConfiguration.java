@@ -44,7 +44,8 @@ public class CacheConfiguration {
     @Bean
     public JCacheManagerCustomizer cacheManagerCustomizer(javax.cache.configuration.Configuration<Object, Object> jcacheConfiguration) {
         return cm -> {
-            createCache(cm, kz.kaznu.nmm.aglomer.domain.Properties.class.getName(), jcacheConfiguration);
+            createCache(cm, kz.kaznu.nmm.aglomer.domain.PropertyGroup.class.getName(), jcacheConfiguration);
+            createCache(cm, kz.kaznu.nmm.aglomer.domain.Property.class.getName(), jcacheConfiguration);
             // jhipster-needle-redis-add-entry
         };
     }
