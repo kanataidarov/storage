@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+    <!--
+        Added the constraints for entity RecordValue.
+    -->
+    <changeSet id="20200224122400-2" author="jhipster">
+        
+        <addForeignKeyConstraint baseColumnNames="record_id"
+                                 baseTableName="record_value"
+                                 constraintName="fk_record_value_record_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="record"/>
+
+        <addForeignKeyConstraint baseColumnNames="field_id"
+                                 baseTableName="record_value"
+                                 constraintName="fk_record_value_field_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="record_field"/>
+
+    </changeSet>
+</databaseChangeLog>

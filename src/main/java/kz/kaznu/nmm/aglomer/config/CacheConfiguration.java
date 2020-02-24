@@ -46,6 +46,15 @@ public class CacheConfiguration {
         return cm -> {
             createCache(cm, kz.kaznu.nmm.aglomer.domain.PropertyGroup.class.getName(), jcacheConfiguration);
             createCache(cm, kz.kaznu.nmm.aglomer.domain.Property.class.getName(), jcacheConfiguration);
+            createCache(cm, kz.kaznu.nmm.aglomer.domain.RecordGroup.class.getName(), jcacheConfiguration);
+            createCache(cm, kz.kaznu.nmm.aglomer.domain.RecordGroup.class.getName() + ".recordGroupRecordTemplates", jcacheConfiguration);
+            createCache(cm, kz.kaznu.nmm.aglomer.domain.RecordTemplate.class.getName(), jcacheConfiguration);
+            createCache(cm, kz.kaznu.nmm.aglomer.domain.RecordTemplate.class.getName() + ".recordTemplateRecordFields", jcacheConfiguration);
+            createCache(cm, kz.kaznu.nmm.aglomer.domain.RecordField.class.getName(), jcacheConfiguration);
+            createCache(cm, kz.kaznu.nmm.aglomer.domain.RecordField.class.getName() + ".recordFieldRecordValues", jcacheConfiguration);
+            createCache(cm, kz.kaznu.nmm.aglomer.domain.Record.class.getName(), jcacheConfiguration);
+            createCache(cm, kz.kaznu.nmm.aglomer.domain.Record.class.getName() + ".recordRecordValues", jcacheConfiguration);
+            createCache(cm, kz.kaznu.nmm.aglomer.domain.RecordValue.class.getName(), jcacheConfiguration);
             // jhipster-needle-redis-add-entry
         };
     }
