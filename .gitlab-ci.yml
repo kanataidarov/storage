@@ -62,7 +62,7 @@ sonar-analyze:
         - gradle-test
         # - gradle-integration-test
     script:
-        - ./gradlew sonarqube --no-daemon -Dsonar.organization=aglomer -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=d7473bd09d22bc626a9c67fab78c326426e21753
+        - ./gradlew sonarqube --no-daemon -Dsonar.organization=aglomer -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=d7473bd09d22bc626a9c67fab78c326426e21753 -Dsonar.verbose=true
     allow_failure: true
 
 gradle-package:

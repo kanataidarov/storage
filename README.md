@@ -1,10 +1,10 @@
 # storage
 
-This application was generated using JHipster 6.7.1, you can find documentation and help at [https://www.jhipster.tech/documentation-archive/v6.7.1](https://www.jhipster.tech/documentation-archive/v6.7.1).
+This is a Storage Service - application intended to be part of a microservice architecture. 
 
-This is a "microservice" application intended to be part of a microservice architecture, please refer to the [Doing microservices with JHipster][] page of the documentation for more information.
-
-This application is configured for Service Discovery and Configuration with the JHipster-Registry. On launch, it will refuse to start if it is not able to connect to the JHipster-Registry at [http://localhost:8761](http://localhost:8761). For more information, read our documentation on [Service Discovery and Configuration with the JHipster-Registry][].
+The application has following features: 
+* It has interfaces for all persistence entities used in [Gateway microservice](https://gitlab.com/aglomer/gateway/).
+* The application is configured for Service Discovery and Configuration with the JHipster-Registry. On launch, it will refuse to start if it is not able to connect to the JHipster-Registry at [http://localhost:8761](http://localhost:8761). For more information on the JHipster Registry, read documentation on [https://www.jhipster.tech/jhipster-registry/](https://www.jhipster.tech/jhipster-registry/).
 
 ## Development
 
@@ -12,21 +12,17 @@ To start your application in the dev profile, run:
 
     ./gradlew
 
-For further instructions on how to develop with JHipster, have a look at [Using JHipster in development][].
-
 ## Building for production
 
 ### Packaging as jar
 
-To build the final jar and optimize the storage application for production, run:
+To build the final jar and optimize the uas application for production, run:
 
     ./gradlew -Pprod clean bootJar
 
 To ensure everything worked, run:
 
     java -jar build/libs/*.jar
-
-Refer to [Using JHipster in production][] for more details.
 
 ### Packaging as war
 
@@ -40,27 +36,23 @@ To launch your application's tests, run:
 
     ./gradlew test integrationTest jacocoTestReport
 
-For more information, refer to the [Running tests page][].
-
 ### Code quality
 
-Sonar is used to analyse code quality. You can start a local Sonar server (accessible on http://localhost:9001) with:
+Cloud based [Sonar](https://sonarcloud.io/) is used to analyse code quality. 
+
+You can start a local Sonar server (accessible on http://localhost:9001) with:
 
 ```
 docker-compose -f src/main/docker/sonar.yml up -d
 ```
-
-You can run a Sonar analysis with using the [sonar-scanner](https://docs.sonarqube.org/display/SCAN/Analyzing+with+SonarQube+Scanner) or by using the gradle plugin.
+Also you can run a Sonar analysis with using the [sonar-scanner](https://docs.sonarqube.org/display/SCAN/Analyzing+with+SonarQube+Scanner) or by using the gradle plugin.
 
 Then, run a Sonar analysis:
 
 ```
 ./gradlew -Pprod clean check jacocoTestReport sonarqube
 ```
-
-For more information, refer to the [Code quality page][].
-
-## Using Docker to simplify development (optional)
+## Using Docker for simple deployment (optional)
 
 You can use Docker to improve your JHipster development experience. A number of docker-compose configuration are available in the [src/main/docker](src/main/docker) folder to launch required third party services.
 
@@ -81,19 +73,10 @@ Then run:
 
     docker-compose -f src/main/docker/app.yml up -d
 
-For more information refer to [Using Docker and Docker-Compose][], this page also contains information on the docker-compose sub-generator (`jhipster docker-compose`), which is able to generate docker configurations for one or several JHipster applications.
+For more information refer to [Docker Documentation](https://docs.docker.com/). 
 
 ## Continuous Integration (optional)
 
-To configure CI for your project, run the ci-cd sub-generator (`jhipster ci-cd`), this will let you generate configuration files for a number of Continuous Integration systems. Consult the [Setting up Continuous Integration][] page for more information.
+The application structure fully supports CI pipeline for popular Continuous Integration systems (GitLab, GitHub, etc.).
 
-[jhipster homepage and latest documentation]: https://www.jhipster.tech
-[jhipster 6.7.1 archive]: https://www.jhipster.tech/documentation-archive/v6.7.1
-[doing microservices with jhipster]: https://www.jhipster.tech/documentation-archive/v6.7.1/microservices-architecture/
-[using jhipster in development]: https://www.jhipster.tech/documentation-archive/v6.7.1/development/
-[service discovery and configuration with the jhipster-registry]: https://www.jhipster.tech/documentation-archive/v6.7.1/microservices-architecture/#jhipster-registry
-[using docker and docker-compose]: https://www.jhipster.tech/documentation-archive/v6.7.1/docker-compose
-[using jhipster in production]: https://www.jhipster.tech/documentation-archive/v6.7.1/production/
-[running tests page]: https://www.jhipster.tech/documentation-archive/v6.7.1/running-tests/
-[code quality page]: https://www.jhipster.tech/documentation-archive/v6.7.1/code-quality/
-[setting up continuous integration]: https://www.jhipster.tech/documentation-archive/v6.7.1/setting-up-ci/
+GitLab CI configuration already included. For more information refer to [GitLab Documentation](https://docs.gitlab.com/).
