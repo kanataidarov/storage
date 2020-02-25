@@ -9,14 +9,12 @@ import kz.kaznu.nmm.aglomer.service.mapper.PropertyMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 import static org.elasticsearch.index.query.QueryBuilders.*;
 
@@ -60,15 +58,15 @@ public class PropertyServiceImpl implements PropertyService {
     /**
      * Get all the properties.
      *
+     * @param pageable the pagination information.
      * @return the list of entities.
      */
     @Override
     @Transactional(readOnly = true)
-    public List<PropertyDTO> findAll() {
+    public Page<PropertyDTO> findAll(Pageable pageable) {
         log.debug("Request to get all Properties");
-        return propertyRepository.findAll().stream()
-            .map(propertyMapper::toDto)
-            .collect(Collectors.toCollection(LinkedList::new));
+        return propertyRepository.findAll(pageable)
+            .map(propertyMapper::toDto);
     }
 
     /**
@@ -101,15 +99,14 @@ public class PropertyServiceImpl implements PropertyService {
      * Search for the property corresponding to the query.
      *
      * @param query the query of the search.
+     * @param pageable the pagination information.
      * @return the list of entities.
      */
     @Override
     @Transactional(readOnly = true)
-    public List<PropertyDTO> search(String query) {
-        log.debug("Request to search Properties for query {}", query);
-        return StreamSupport
-            .stream(propertySearchRepository.search(queryStringQuery(query)).spliterator(), false)
-            .map(propertyMapper::toDto)
-            .collect(Collectors.toList());
+    public Page<PropertyDTO> search(String query, Pageable pageable) {
+        log.debug("Request to search for a page of Properties for query {}", query);
+        return propertySearchRepository.search(queryStringQuery(query), pageable)
+            .map(propertyMapper::toDto);
     }
 }

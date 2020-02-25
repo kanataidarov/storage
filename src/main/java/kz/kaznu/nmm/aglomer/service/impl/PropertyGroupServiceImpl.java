@@ -9,14 +9,12 @@ import kz.kaznu.nmm.aglomer.service.mapper.PropertyGroupMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 import static org.elasticsearch.index.query.QueryBuilders.*;
 
@@ -60,15 +58,15 @@ public class PropertyGroupServiceImpl implements PropertyGroupService {
     /**
      * Get all the propertyGroups.
      *
+     * @param pageable the pagination information.
      * @return the list of entities.
      */
     @Override
     @Transactional(readOnly = true)
-    public List<PropertyGroupDTO> findAll() {
+    public Page<PropertyGroupDTO> findAll(Pageable pageable) {
         log.debug("Request to get all PropertyGroups");
-        return propertyGroupRepository.findAll().stream()
-            .map(propertyGroupMapper::toDto)
-            .collect(Collectors.toCollection(LinkedList::new));
+        return propertyGroupRepository.findAll(pageable)
+            .map(propertyGroupMapper::toDto);
     }
 
     /**
@@ -101,15 +99,14 @@ public class PropertyGroupServiceImpl implements PropertyGroupService {
      * Search for the propertyGroup corresponding to the query.
      *
      * @param query the query of the search.
+     * @param pageable the pagination information.
      * @return the list of entities.
      */
     @Override
     @Transactional(readOnly = true)
-    public List<PropertyGroupDTO> search(String query) {
-        log.debug("Request to search PropertyGroups for query {}", query);
-        return StreamSupport
-            .stream(propertyGroupSearchRepository.search(queryStringQuery(query)).spliterator(), false)
-            .map(propertyGroupMapper::toDto)
-            .collect(Collectors.toList());
+    public Page<PropertyGroupDTO> search(String query, Pageable pageable) {
+        log.debug("Request to search for a page of PropertyGroups for query {}", query);
+        return propertyGroupSearchRepository.search(queryStringQuery(query), pageable)
+            .map(propertyGroupMapper::toDto);
     }
 }

@@ -3,12 +3,20 @@ package kz.kaznu.nmm.aglomer.web.rest;
 import kz.kaznu.nmm.aglomer.service.PropertyGroupService;
 import kz.kaznu.nmm.aglomer.web.rest.errors.BadRequestAlertException;
 import kz.kaznu.nmm.aglomer.service.dto.PropertyGroupDTO;
+import kz.kaznu.nmm.aglomer.service.dto.PropertyGroupCriteria;
+import kz.kaznu.nmm.aglomer.service.PropertyGroupQueryService;
 
 import io.github.jhipster.web.util.HeaderUtil;
+import io.github.jhipster.web.util.PaginationUtil;
 import io.github.jhipster.web.util.ResponseUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,8 +45,11 @@ public class PropertyGroupResource {
 
     private final PropertyGroupService propertyGroupService;
 
-    public PropertyGroupResource(PropertyGroupService propertyGroupService) {
+    private final PropertyGroupQueryService propertyGroupQueryService;
+
+    public PropertyGroupResource(PropertyGroupService propertyGroupService, PropertyGroupQueryService propertyGroupQueryService) {
         this.propertyGroupService = propertyGroupService;
+        this.propertyGroupQueryService = propertyGroupQueryService;
     }
 
     /**
@@ -84,12 +95,28 @@ public class PropertyGroupResource {
     /**
      * {@code GET  /property-groups} : get all the propertyGroups.
      *
+     * @param pageable the pagination information.
+     * @param criteria the criteria which the requested entities should match.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of propertyGroups in body.
      */
     @GetMapping("/property-groups")
-    public List<PropertyGroupDTO> getAllPropertyGroups() {
-        log.debug("REST request to get all PropertyGroups");
-        return propertyGroupService.findAll();
+    public ResponseEntity<List<PropertyGroupDTO>> getAllPropertyGroups(PropertyGroupCriteria criteria, Pageable pageable) {
+        log.debug("REST request to get PropertyGroups by criteria: {}", criteria);
+        Page<PropertyGroupDTO> page = propertyGroupQueryService.findByCriteria(criteria, pageable);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
+    }
+
+    /**
+     * {@code GET  /property-groups/count} : count all the propertyGroups.
+     *
+     * @param criteria the criteria which the requested entities should match.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the count in body.
+     */
+    @GetMapping("/property-groups/count")
+    public ResponseEntity<Long> countPropertyGroups(PropertyGroupCriteria criteria) {
+        log.debug("REST request to count PropertyGroups by criteria: {}", criteria);
+        return ResponseEntity.ok().body(propertyGroupQueryService.countByCriteria(criteria));
     }
 
     /**
@@ -123,11 +150,14 @@ public class PropertyGroupResource {
      * to the query.
      *
      * @param query the query of the propertyGroup search.
+     * @param pageable the pagination information.
      * @return the result of the search.
      */
     @GetMapping("/_search/property-groups")
-    public List<PropertyGroupDTO> searchPropertyGroups(@RequestParam String query) {
-        log.debug("REST request to search PropertyGroups for query {}", query);
-        return propertyGroupService.search(query);
+    public ResponseEntity<List<PropertyGroupDTO>> searchPropertyGroups(@RequestParam String query, Pageable pageable) {
+        log.debug("REST request to search for a page of PropertyGroups for query {}", query);
+        Page<PropertyGroupDTO> page = propertyGroupService.search(query, pageable);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
 }

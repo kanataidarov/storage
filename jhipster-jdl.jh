@@ -1,0 +1,72 @@
+entity PropertyGroup {
+	name String required unique maxlength(99),
+}
+
+entity Property {
+	name String required unique maxlength(99),
+	created Instant required,
+	updated Instant required
+}
+
+entity RecordGroup {
+	name String required unique maxlength(99),
+    type RecordType required
+}
+
+entity RecordTemplate {
+	name String required unique maxlength(99),
+	created Instant required,
+	updated Instant required,
+	language Language required
+}
+
+entity RecordField {
+	name String required maxlength(99),
+    description String maxlength(299)
+}
+
+entity Record {
+    code BigDecimal required,
+    created Instant required,
+    updated Instant required
+}
+
+entity RecordValue {
+	value String maxlength(299),
+	created Instant required,
+    updated Instant required
+}
+
+enum Language {
+    RUSSIAN, ENGLISH, KAZAKH
+}
+
+enum RecordType {
+	SURVEY
+}
+
+relationship OneToMany {
+	RecordGroup{RecordGroupRecordTemplate} to RecordTemplate{group},
+    RecordTemplate{RecordTemplateRecordField} to RecordField{template},
+    Record{RecordRecordValue} to RecordValue{record},
+    RecordField{RecordFieldRecordValue} to RecordValue{field}
+}
+
+relationship OneToMany {
+	PropertyGroup{PropertyGroupProperty} to Property{group}
+}
+
+paginate RecordGroup, RecordTemplate with infinite-scroll
+paginate Record with pagination
+paginate PropertyGroup with infinite-scroll
+paginate Property with pagination
+
+dto * with mapstruct
+service * with serviceImpl
+
+search RecordGroup, RecordTemplate, Record with elasticsearch
+filter RecordGroup, RecordTemplate, Record
+search Property, PropertyGroup with elasticsearch
+filter Property, PropertyGroup
+
+
