@@ -1,5 +1,6 @@
 package kz.kaznu.nmm.aglomer.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
@@ -39,8 +40,9 @@ public class Property implements Serializable {
     @Column(name = "updated", nullable = false)
     private Instant updated;
 
-    @Column(name = "jhi_group")
-    private Long group;
+    @ManyToOne
+    @JsonIgnoreProperties("propertyGroupProperties")
+    private PropertyGroup group;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
     public Long getId() {
@@ -90,17 +92,17 @@ public class Property implements Serializable {
         this.updated = updated;
     }
 
-    public Long getGroup() {
+    public PropertyGroup getGroup() {
         return group;
     }
 
-    public Property group(Long group) {
-        this.group = group;
+    public Property group(PropertyGroup propertyGroup) {
+        this.group = propertyGroup;
         return this;
     }
 
-    public void setGroup(Long group) {
-        this.group = group;
+    public void setGroup(PropertyGroup propertyGroup) {
+        this.group = propertyGroup;
     }
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here, do not remove
 
@@ -127,7 +129,6 @@ public class Property implements Serializable {
             ", name='" + getName() + "'" +
             ", created='" + getCreated() + "'" +
             ", updated='" + getUpdated() + "'" +
-            ", group=" + getGroup() +
             "}";
     }
 }

@@ -1,7 +1,5 @@
 {
-    "fluentMethods": true,
-    "clientRootFolder": "storage",
-    "relationships": [],
+    "name": "Property",
     "fields": [
         {
             "fieldName": "name",
@@ -26,20 +24,27 @@
             "fieldValidateRules": [
                 "required"
             ]
-        },
-        {
-            "fieldName": "group",
-            "fieldType": "Long"
         }
     ],
-    "changelogDate": "20200223111410",
-    "dto": "mapstruct",
-    "searchEngine": "elasticsearch",
-    "service": "serviceImpl",
+    "relationships": [
+        {
+            "relationshipType": "many-to-one",
+            "otherEntityName": "propertyGroup",
+            "otherEntityRelationshipName": "propertyGroupProperty",
+            "relationshipName": "group",
+            "otherEntityField": "id"
+        }
+    ],
+    "changelogDate": "20200224153700",
     "entityTableName": "property",
-    "databaseType": "sql",
+    "dto": "mapstruct",
+    "pagination": "pagination",
+    "service": "serviceImpl",
+    "jpaMetamodelFiltering": true,
+    "fluentMethods": true,
     "readOnly": false,
-    "jpaMetamodelFiltering": false,
-    "pagination": "no",
-    "microserviceName": "storage"
+    "clientRootFolder": "storage",
+    "applications": "*",
+    "microserviceName": "storage",
+    "searchEngine": "elasticsearch"
 }

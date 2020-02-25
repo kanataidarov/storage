@@ -4,12 +4,15 @@ import kz.kaznu.nmm.aglomer.RedisTestContainerExtension;
 import kz.kaznu.nmm.aglomer.StorageApp;
 import kz.kaznu.nmm.aglomer.config.SecurityBeanOverrideConfiguration;
 import kz.kaznu.nmm.aglomer.domain.Property;
+import kz.kaznu.nmm.aglomer.domain.PropertyGroup;
 import kz.kaznu.nmm.aglomer.repository.PropertyRepository;
 import kz.kaznu.nmm.aglomer.repository.search.PropertySearchRepository;
 import kz.kaznu.nmm.aglomer.service.PropertyService;
 import kz.kaznu.nmm.aglomer.service.dto.PropertyDTO;
 import kz.kaznu.nmm.aglomer.service.mapper.PropertyMapper;
 import kz.kaznu.nmm.aglomer.web.rest.errors.ExceptionTranslator;
+import kz.kaznu.nmm.aglomer.service.dto.PropertyCriteria;
+import kz.kaznu.nmm.aglomer.service.PropertyQueryService;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,6 +20,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -55,9 +60,6 @@ public class PropertyResourceIT {
     private static final Instant DEFAULT_UPDATED = Instant.ofEpochMilli(0L);
     private static final Instant UPDATED_UPDATED = Instant.now().truncatedTo(ChronoUnit.MILLIS);
 
-    private static final Long DEFAULT_GROUP = 1L;
-    private static final Long UPDATED_GROUP = 2L;
-
     @Autowired
     private PropertyRepository propertyRepository;
 
@@ -74,6 +76,9 @@ public class PropertyResourceIT {
      */
     @Autowired
     private PropertySearchRepository mockPropertySearchRepository;
+
+    @Autowired
+    private PropertyQueryService propertyQueryService;
 
     @Autowired
     private MappingJackson2HttpMessageConverter jacksonMessageConverter;
@@ -97,7 +102,7 @@ public class PropertyResourceIT {
     @BeforeEach
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        final PropertyResource propertyResource = new PropertyResource(propertyService);
+        final PropertyResource propertyResource = new PropertyResource(propertyService, propertyQueryService);
         this.restPropertyMockMvc = MockMvcBuilders.standaloneSetup(propertyResource)
             .setCustomArgumentResolvers(pageableArgumentResolver)
             .setControllerAdvice(exceptionTranslator)
@@ -116,8 +121,7 @@ public class PropertyResourceIT {
         Property property = new Property()
             .name(DEFAULT_NAME)
             .created(DEFAULT_CREATED)
-            .updated(DEFAULT_UPDATED)
-            .group(DEFAULT_GROUP);
+            .updated(DEFAULT_UPDATED);
         return property;
     }
     /**
@@ -130,8 +134,7 @@ public class PropertyResourceIT {
         Property property = new Property()
             .name(UPDATED_NAME)
             .created(UPDATED_CREATED)
-            .updated(UPDATED_UPDATED)
-            .group(UPDATED_GROUP);
+            .updated(UPDATED_UPDATED);
         return property;
     }
 
@@ -159,7 +162,6 @@ public class PropertyResourceIT {
         assertThat(testProperty.getName()).isEqualTo(DEFAULT_NAME);
         assertThat(testProperty.getCreated()).isEqualTo(DEFAULT_CREATED);
         assertThat(testProperty.getUpdated()).isEqualTo(DEFAULT_UPDATED);
-        assertThat(testProperty.getGroup()).isEqualTo(DEFAULT_GROUP);
 
         // Validate the Property in Elasticsearch
         verify(mockPropertySearchRepository, times(1)).save(testProperty);
@@ -259,8 +261,7 @@ public class PropertyResourceIT {
             .andExpect(jsonPath("$.[*].id").value(hasItem(property.getId().intValue())))
             .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)))
             .andExpect(jsonPath("$.[*].created").value(hasItem(DEFAULT_CREATED.toString())))
-            .andExpect(jsonPath("$.[*].updated").value(hasItem(DEFAULT_UPDATED.toString())))
-            .andExpect(jsonPath("$.[*].group").value(hasItem(DEFAULT_GROUP.intValue())));
+            .andExpect(jsonPath("$.[*].updated").value(hasItem(DEFAULT_UPDATED.toString())));
     }
     
     @Test
@@ -276,9 +277,266 @@ public class PropertyResourceIT {
             .andExpect(jsonPath("$.id").value(property.getId().intValue()))
             .andExpect(jsonPath("$.name").value(DEFAULT_NAME))
             .andExpect(jsonPath("$.created").value(DEFAULT_CREATED.toString()))
-            .andExpect(jsonPath("$.updated").value(DEFAULT_UPDATED.toString()))
-            .andExpect(jsonPath("$.group").value(DEFAULT_GROUP.intValue()));
+            .andExpect(jsonPath("$.updated").value(DEFAULT_UPDATED.toString()));
     }
+
+
+    @Test
+    @Transactional
+    public void getPropertiesByIdFiltering() throws Exception {
+        // Initialize the database
+        propertyRepository.saveAndFlush(property);
+
+        Long id = property.getId();
+
+        defaultPropertyShouldBeFound("id.equals=" + id);
+        defaultPropertyShouldNotBeFound("id.notEquals=" + id);
+
+        defaultPropertyShouldBeFound("id.greaterThanOrEqual=" + id);
+        defaultPropertyShouldNotBeFound("id.greaterThan=" + id);
+
+        defaultPropertyShouldBeFound("id.lessThanOrEqual=" + id);
+        defaultPropertyShouldNotBeFound("id.lessThan=" + id);
+    }
+
+
+    @Test
+    @Transactional
+    public void getAllPropertiesByNameIsEqualToSomething() throws Exception {
+        // Initialize the database
+        propertyRepository.saveAndFlush(property);
+
+        // Get all the propertyList where name equals to DEFAULT_NAME
+        defaultPropertyShouldBeFound("name.equals=" + DEFAULT_NAME);
+
+        // Get all the propertyList where name equals to UPDATED_NAME
+        defaultPropertyShouldNotBeFound("name.equals=" + UPDATED_NAME);
+    }
+
+    @Test
+    @Transactional
+    public void getAllPropertiesByNameIsNotEqualToSomething() throws Exception {
+        // Initialize the database
+        propertyRepository.saveAndFlush(property);
+
+        // Get all the propertyList where name not equals to DEFAULT_NAME
+        defaultPropertyShouldNotBeFound("name.notEquals=" + DEFAULT_NAME);
+
+        // Get all the propertyList where name not equals to UPDATED_NAME
+        defaultPropertyShouldBeFound("name.notEquals=" + UPDATED_NAME);
+    }
+
+    @Test
+    @Transactional
+    public void getAllPropertiesByNameIsInShouldWork() throws Exception {
+        // Initialize the database
+        propertyRepository.saveAndFlush(property);
+
+        // Get all the propertyList where name in DEFAULT_NAME or UPDATED_NAME
+        defaultPropertyShouldBeFound("name.in=" + DEFAULT_NAME + "," + UPDATED_NAME);
+
+        // Get all the propertyList where name equals to UPDATED_NAME
+        defaultPropertyShouldNotBeFound("name.in=" + UPDATED_NAME);
+    }
+
+    @Test
+    @Transactional
+    public void getAllPropertiesByNameIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        propertyRepository.saveAndFlush(property);
+
+        // Get all the propertyList where name is not null
+        defaultPropertyShouldBeFound("name.specified=true");
+
+        // Get all the propertyList where name is null
+        defaultPropertyShouldNotBeFound("name.specified=false");
+    }
+                @Test
+    @Transactional
+    public void getAllPropertiesByNameContainsSomething() throws Exception {
+        // Initialize the database
+        propertyRepository.saveAndFlush(property);
+
+        // Get all the propertyList where name contains DEFAULT_NAME
+        defaultPropertyShouldBeFound("name.contains=" + DEFAULT_NAME);
+
+        // Get all the propertyList where name contains UPDATED_NAME
+        defaultPropertyShouldNotBeFound("name.contains=" + UPDATED_NAME);
+    }
+
+    @Test
+    @Transactional
+    public void getAllPropertiesByNameNotContainsSomething() throws Exception {
+        // Initialize the database
+        propertyRepository.saveAndFlush(property);
+
+        // Get all the propertyList where name does not contain DEFAULT_NAME
+        defaultPropertyShouldNotBeFound("name.doesNotContain=" + DEFAULT_NAME);
+
+        // Get all the propertyList where name does not contain UPDATED_NAME
+        defaultPropertyShouldBeFound("name.doesNotContain=" + UPDATED_NAME);
+    }
+
+
+    @Test
+    @Transactional
+    public void getAllPropertiesByCreatedIsEqualToSomething() throws Exception {
+        // Initialize the database
+        propertyRepository.saveAndFlush(property);
+
+        // Get all the propertyList where created equals to DEFAULT_CREATED
+        defaultPropertyShouldBeFound("created.equals=" + DEFAULT_CREATED);
+
+        // Get all the propertyList where created equals to UPDATED_CREATED
+        defaultPropertyShouldNotBeFound("created.equals=" + UPDATED_CREATED);
+    }
+
+    @Test
+    @Transactional
+    public void getAllPropertiesByCreatedIsNotEqualToSomething() throws Exception {
+        // Initialize the database
+        propertyRepository.saveAndFlush(property);
+
+        // Get all the propertyList where created not equals to DEFAULT_CREATED
+        defaultPropertyShouldNotBeFound("created.notEquals=" + DEFAULT_CREATED);
+
+        // Get all the propertyList where created not equals to UPDATED_CREATED
+        defaultPropertyShouldBeFound("created.notEquals=" + UPDATED_CREATED);
+    }
+
+    @Test
+    @Transactional
+    public void getAllPropertiesByCreatedIsInShouldWork() throws Exception {
+        // Initialize the database
+        propertyRepository.saveAndFlush(property);
+
+        // Get all the propertyList where created in DEFAULT_CREATED or UPDATED_CREATED
+        defaultPropertyShouldBeFound("created.in=" + DEFAULT_CREATED + "," + UPDATED_CREATED);
+
+        // Get all the propertyList where created equals to UPDATED_CREATED
+        defaultPropertyShouldNotBeFound("created.in=" + UPDATED_CREATED);
+    }
+
+    @Test
+    @Transactional
+    public void getAllPropertiesByCreatedIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        propertyRepository.saveAndFlush(property);
+
+        // Get all the propertyList where created is not null
+        defaultPropertyShouldBeFound("created.specified=true");
+
+        // Get all the propertyList where created is null
+        defaultPropertyShouldNotBeFound("created.specified=false");
+    }
+
+    @Test
+    @Transactional
+    public void getAllPropertiesByUpdatedIsEqualToSomething() throws Exception {
+        // Initialize the database
+        propertyRepository.saveAndFlush(property);
+
+        // Get all the propertyList where updated equals to DEFAULT_UPDATED
+        defaultPropertyShouldBeFound("updated.equals=" + DEFAULT_UPDATED);
+
+        // Get all the propertyList where updated equals to UPDATED_UPDATED
+        defaultPropertyShouldNotBeFound("updated.equals=" + UPDATED_UPDATED);
+    }
+
+    @Test
+    @Transactional
+    public void getAllPropertiesByUpdatedIsNotEqualToSomething() throws Exception {
+        // Initialize the database
+        propertyRepository.saveAndFlush(property);
+
+        // Get all the propertyList where updated not equals to DEFAULT_UPDATED
+        defaultPropertyShouldNotBeFound("updated.notEquals=" + DEFAULT_UPDATED);
+
+        // Get all the propertyList where updated not equals to UPDATED_UPDATED
+        defaultPropertyShouldBeFound("updated.notEquals=" + UPDATED_UPDATED);
+    }
+
+    @Test
+    @Transactional
+    public void getAllPropertiesByUpdatedIsInShouldWork() throws Exception {
+        // Initialize the database
+        propertyRepository.saveAndFlush(property);
+
+        // Get all the propertyList where updated in DEFAULT_UPDATED or UPDATED_UPDATED
+        defaultPropertyShouldBeFound("updated.in=" + DEFAULT_UPDATED + "," + UPDATED_UPDATED);
+
+        // Get all the propertyList where updated equals to UPDATED_UPDATED
+        defaultPropertyShouldNotBeFound("updated.in=" + UPDATED_UPDATED);
+    }
+
+    @Test
+    @Transactional
+    public void getAllPropertiesByUpdatedIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        propertyRepository.saveAndFlush(property);
+
+        // Get all the propertyList where updated is not null
+        defaultPropertyShouldBeFound("updated.specified=true");
+
+        // Get all the propertyList where updated is null
+        defaultPropertyShouldNotBeFound("updated.specified=false");
+    }
+
+    @Test
+    @Transactional
+    public void getAllPropertiesByGroupIsEqualToSomething() throws Exception {
+        // Initialize the database
+        propertyRepository.saveAndFlush(property);
+        PropertyGroup group = PropertyGroupResourceIT.createEntity(em);
+        em.persist(group);
+        em.flush();
+        property.setGroup(group);
+        propertyRepository.saveAndFlush(property);
+        Long groupId = group.getId();
+
+        // Get all the propertyList where group equals to groupId
+        defaultPropertyShouldBeFound("groupId.equals=" + groupId);
+
+        // Get all the propertyList where group equals to groupId + 1
+        defaultPropertyShouldNotBeFound("groupId.equals=" + (groupId + 1));
+    }
+
+    /**
+     * Executes the search, and checks that the default entity is returned.
+     */
+    private void defaultPropertyShouldBeFound(String filter) throws Exception {
+        restPropertyMockMvc.perform(get("/api/properties?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(property.getId().intValue())))
+            .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)))
+            .andExpect(jsonPath("$.[*].created").value(hasItem(DEFAULT_CREATED.toString())))
+            .andExpect(jsonPath("$.[*].updated").value(hasItem(DEFAULT_UPDATED.toString())));
+
+        // Check, that the count call also returns 1
+        restPropertyMockMvc.perform(get("/api/properties/count?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(content().string("1"));
+    }
+
+    /**
+     * Executes the search, and checks that the default entity is not returned.
+     */
+    private void defaultPropertyShouldNotBeFound(String filter) throws Exception {
+        restPropertyMockMvc.perform(get("/api/properties?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$").isArray())
+            .andExpect(jsonPath("$").isEmpty());
+
+        // Check, that the count call also returns 0
+        restPropertyMockMvc.perform(get("/api/properties/count?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(content().string("0"));
+    }
+
 
     @Test
     @Transactional
@@ -303,8 +561,7 @@ public class PropertyResourceIT {
         updatedProperty
             .name(UPDATED_NAME)
             .created(UPDATED_CREATED)
-            .updated(UPDATED_UPDATED)
-            .group(UPDATED_GROUP);
+            .updated(UPDATED_UPDATED);
         PropertyDTO propertyDTO = propertyMapper.toDto(updatedProperty);
 
         restPropertyMockMvc.perform(put("/api/properties")
@@ -319,7 +576,6 @@ public class PropertyResourceIT {
         assertThat(testProperty.getName()).isEqualTo(UPDATED_NAME);
         assertThat(testProperty.getCreated()).isEqualTo(UPDATED_CREATED);
         assertThat(testProperty.getUpdated()).isEqualTo(UPDATED_UPDATED);
-        assertThat(testProperty.getGroup()).isEqualTo(UPDATED_GROUP);
 
         // Validate the Property in Elasticsearch
         verify(mockPropertySearchRepository, times(1)).save(testProperty);
@@ -373,8 +629,8 @@ public class PropertyResourceIT {
     public void searchProperty() throws Exception {
         // Initialize the database
         propertyRepository.saveAndFlush(property);
-        when(mockPropertySearchRepository.search(queryStringQuery("id:" + property.getId())))
-            .thenReturn(Collections.singletonList(property));
+        when(mockPropertySearchRepository.search(queryStringQuery("id:" + property.getId()), PageRequest.of(0, 20)))
+            .thenReturn(new PageImpl<>(Collections.singletonList(property), PageRequest.of(0, 1), 1));
         // Search the property
         restPropertyMockMvc.perform(get("/api/_search/properties?query=id:" + property.getId()))
             .andExpect(status().isOk())
@@ -382,7 +638,6 @@ public class PropertyResourceIT {
             .andExpect(jsonPath("$.[*].id").value(hasItem(property.getId().intValue())))
             .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)))
             .andExpect(jsonPath("$.[*].created").value(hasItem(DEFAULT_CREATED.toString())))
-            .andExpect(jsonPath("$.[*].updated").value(hasItem(DEFAULT_UPDATED.toString())))
-            .andExpect(jsonPath("$.[*].group").value(hasItem(DEFAULT_GROUP.intValue())));
+            .andExpect(jsonPath("$.[*].updated").value(hasItem(DEFAULT_UPDATED.toString())));
     }
 }

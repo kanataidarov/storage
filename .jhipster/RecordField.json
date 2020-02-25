@@ -34,11 +34,11 @@
             "otherEntityField": "id"
         }
     ],
-    "changelogDate": "20200224122200",
+    "changelogDate": "20200224154000",
     "entityTableName": "record_field",
     "dto": "mapstruct",
     "pagination": "no",
-    "service": "serviceClass",
+    "service": "serviceImpl",
     "jpaMetamodelFiltering": false,
     "fluentMethods": true,
     "readOnly": false,

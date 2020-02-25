@@ -13,6 +13,9 @@ import org.mapstruct.*;
 public interface PropertyGroupMapper extends EntityMapper<PropertyGroupDTO, PropertyGroup> {
 
 
+    @Mapping(target = "propertyGroupProperties", ignore = true)
+    @Mapping(target = "removePropertyGroupProperty", ignore = true)
+    PropertyGroup toEntity(PropertyGroupDTO propertyGroupDTO);
 
     default PropertyGroup fromId(Long id) {
         if (id == null) {
