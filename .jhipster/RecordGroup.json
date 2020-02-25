@@ -28,7 +28,7 @@
             "relationshipName": "recordGroupRecordTemplate"
         }
     ],
-    "changelogDate": "20200224122000",
+    "changelogDate": "20200224153800",
     "entityTableName": "record_group",
     "dto": "mapstruct",
     "pagination": "infinite-scroll",

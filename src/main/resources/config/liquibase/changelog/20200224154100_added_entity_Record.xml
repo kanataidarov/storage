@@ -8,15 +8,15 @@
 
     
     <!--
-        Added the entity Property.
+        Added the entity Record.
     -->
-    <changeSet id="20200223111410-1" author="jhipster">
-        <createTable tableName="property">
+    <changeSet id="20200224154100-1" author="jhipster">
+        <createTable tableName="record">
             <column name="id" type="bigint">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="name" type="varchar(99)">
-                <constraints nullable="false" unique="true" uniqueConstraintName="ux_property_name" />
+            <column name="code" type="decimal(21,2)">
+                <constraints nullable="false" />
             </column>
             <column name="created" type="datetime">
                 <constraints nullable="false" />
@@ -24,16 +24,13 @@
             <column name="updated" type="datetime">
                 <constraints nullable="false" />
             </column>
-            <column name="group_id" type="bigint">
-                <constraints nullable="true" />
-            </column>
             <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here, do not remove-->
         </createTable>
-        <dropDefaultValue tableName="property" columnName="created" columnDataType="datetime"/>
-        <dropDefaultValue tableName="property" columnName="updated" columnDataType="datetime"/>
+        <dropDefaultValue tableName="record" columnName="created" columnDataType="datetime"/>
+        <dropDefaultValue tableName="record" columnName="updated" columnDataType="datetime"/>
     </changeSet>
 
-    <changeSet id="20200223111410-1-relations" author="jhipster">
+    <changeSet id="20200224154100-1-relations" author="jhipster">
 
     </changeSet>
     <!-- jhipster-needle-liquibase-add-changeset - JHipster will add changesets here, do not remove-->
@@ -46,13 +43,13 @@
           This can be customized by adding or removing 'faker' in the 'spring.liquibase.contexts'
           Spring Boot configuration key.
     -->
-    <changeSet id="20200223111410-1-data" author="jhipster" context="faker">
+    <changeSet id="20200224154100-1-data" author="jhipster" context="faker">
         <loadData
-                  file="config/liquibase/fake-data/property.csv"
+                  file="config/liquibase/fake-data/record.csv"
                   separator=";"
-                  tableName="property">
+                  tableName="record">
             <column name="id" type="numeric"/>
-            <column name="name" type="string"/>
+            <column name="code" type="numeric"/>
             <column name="created" type="datetime"/>
             <column name="updated" type="datetime"/>
             <!-- jhipster-needle-liquibase-add-loadcolumn - JHipster (and/or extensions) can add load columns here, do not remove-->

@@ -22,8 +22,8 @@ public class PropertyDTO implements Serializable {
     @NotNull
     private Instant updated;
 
-    private Long group;
 
+    private Long groupId;
 
     public Long getId() {
         return id;
@@ -57,12 +57,12 @@ public class PropertyDTO implements Serializable {
         this.updated = updated;
     }
 
-    public Long getGroup() {
-        return group;
+    public Long getGroupId() {
+        return groupId;
     }
 
-    public void setGroup(Long group) {
-        this.group = group;
+    public void setGroupId(Long propertyGroupId) {
+        this.groupId = propertyGroupId;
     }
 
     @Override
@@ -93,7 +93,7 @@ public class PropertyDTO implements Serializable {
             ", name='" + getName() + "'" +
             ", created='" + getCreated() + "'" +
             ", updated='" + getUpdated() + "'" +
-            ", group=" + getGroup() +
+            ", groupId=" + getGroupId() +
             "}";
     }
 }

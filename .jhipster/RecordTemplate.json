@@ -49,7 +49,7 @@
             "otherEntityField": "id"
         }
     ],
-    "changelogDate": "20200224122100",
+    "changelogDate": "20200224153900",
     "entityTableName": "record_template",
     "dto": "mapstruct",
     "pagination": "infinite-scroll",

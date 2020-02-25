@@ -31,7 +31,7 @@
             "relationshipName": "recordRecordValue"
         }
     ],
-    "changelogDate": "20200224122300",
+    "changelogDate": "20200224154100",
     "entityTableName": "record",
     "dto": "mapstruct",
     "pagination": "pagination",
