@@ -2,6 +2,8 @@
 
 This is a Storage Service - application intended to be part of a microservice architecture. 
 
+Part of [Aglomer](https://github.com/users/kanataidarov/projects/1) project.
+
 The application has following features: 
 * It has interfaces for all persistence entities used in [Gateway microservice](https://gitlab.com/aglomer/gateway/).
 * The application is configured for Service Discovery and Configuration with the JHipster-Registry. On launch, it will refuse to start if it is not able to connect to the JHipster-Registry at [http://localhost:8761](http://localhost:8761). For more information on the JHipster Registry, read documentation on [https://www.jhipster.tech/jhipster-registry/](https://www.jhipster.tech/jhipster-registry/).
