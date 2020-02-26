@@ -2,7 +2,11 @@
 
 This is a Storage Service - application intended to be part of a microservice architecture. 
 
+<<<<<<< HEAD
 Part of [Aglomer](https://github.com/users/kanataidarov/projects/1) project.
+=======
+Part of [Aglomer](https://github.com/users/kanataidarov/projects/1) project. 
+>>>>>>> 01b880f304b1906df284690483817bd03835e175
 
 The application has following features: 
 * It has interfaces for all persistence entities used in [Gateway microservice](https://gitlab.com/aglomer/gateway/).
