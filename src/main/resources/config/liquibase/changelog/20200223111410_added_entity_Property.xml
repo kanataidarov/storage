@@ -24,7 +24,7 @@
             <column name="updated" type="datetime">
                 <constraints nullable="false" />
             </column>
-            <column name="jhi_group" type="bigint">
+            <column name="group_id" type="bigint">
                 <constraints nullable="true" />
             </column>
             <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here, do not remove-->
@@ -55,7 +55,6 @@
             <column name="name" type="string"/>
             <column name="created" type="datetime"/>
             <column name="updated" type="datetime"/>
-            <column name="jhi_group" type="numeric"/>
             <!-- jhipster-needle-liquibase-add-loadcolumn - JHipster (and/or extensions) can add load columns here, do not remove-->
         </loadData>
     </changeSet>

@@ -8,6 +8,8 @@ import javax.validation.constraints.*;
 
 import org.springframework.data.elasticsearch.annotations.FieldType;
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * A PropertyGroup.
@@ -30,6 +32,10 @@ public class PropertyGroup implements Serializable {
     @Column(name = "name", length = 99, nullable = false, unique = true)
     private String name;
 
+    @OneToMany(mappedBy = "group")
+    @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+    private Set<Property> propertyGroupProperties = new HashSet<>();
+
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
     public Long getId() {
         return id;
@@ -50,6 +56,31 @@ public class PropertyGroup implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Set<Property> getPropertyGroupProperties() {
+        return propertyGroupProperties;
+    }
+
+    public PropertyGroup propertyGroupProperties(Set<Property> properties) {
+        this.propertyGroupProperties = properties;
+        return this;
+    }
+
+    public PropertyGroup addPropertyGroupProperty(Property property) {
+        this.propertyGroupProperties.add(property);
+        property.setGroup(this);
+        return this;
+    }
+
+    public PropertyGroup removePropertyGroupProperty(Property property) {
+        this.propertyGroupProperties.remove(property);
+        property.setGroup(null);
+        return this;
+    }
+
+    public void setPropertyGroupProperties(Set<Property> properties) {
+        this.propertyGroupProperties = properties;
     }
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here, do not remove
 

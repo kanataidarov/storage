@@ -2,7 +2,9 @@ package kz.kaznu.nmm.aglomer.service;
 
 import kz.kaznu.nmm.aglomer.service.dto.PropertyDTO;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import java.util.Optional;
 
 /**
@@ -21,9 +23,10 @@ public interface PropertyService {
     /**
      * Get all the properties.
      *
+     * @param pageable the pagination information.
      * @return the list of entities.
      */
-    List<PropertyDTO> findAll();
+    Page<PropertyDTO> findAll(Pageable pageable);
 
     /**
      * Get the "id" property.
@@ -45,7 +48,8 @@ public interface PropertyService {
      *
      * @param query the query of the search.
      * 
+     * @param pageable the pagination information.
      * @return the list of entities.
      */
-    List<PropertyDTO> search(String query);
+    Page<PropertyDTO> search(String query, Pageable pageable);
 }

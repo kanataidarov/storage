@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+    <!--
+        Added the constraints for entity RecordTemplate.
+    -->
+    <changeSet id="20200224122100-2" author="jhipster">
+        
+        <addForeignKeyConstraint baseColumnNames="group_id"
+                                 baseTableName="record_template"
+                                 constraintName="fk_record_template_group_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="record_group"/>
+
+    </changeSet>
+</databaseChangeLog>

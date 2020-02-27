@@ -9,10 +9,14 @@ import org.mapstruct.*;
 /**
  * Mapper for the entity {@link Property} and its DTO {@link PropertyDTO}.
  */
-@Mapper(componentModel = "spring", uses = {})
+@Mapper(componentModel = "spring", uses = {PropertyGroupMapper.class})
 public interface PropertyMapper extends EntityMapper<PropertyDTO, Property> {
 
+    @Mapping(source = "group.id", target = "groupId")
+    PropertyDTO toDto(Property property);
 
+    @Mapping(source = "groupId", target = "group")
+    Property toEntity(PropertyDTO propertyDTO);
 
     default Property fromId(Long id) {
         if (id == null) {

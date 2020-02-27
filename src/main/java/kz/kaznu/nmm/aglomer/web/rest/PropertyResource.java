@@ -3,12 +3,20 @@ package kz.kaznu.nmm.aglomer.web.rest;
 import kz.kaznu.nmm.aglomer.service.PropertyService;
 import kz.kaznu.nmm.aglomer.web.rest.errors.BadRequestAlertException;
 import kz.kaznu.nmm.aglomer.service.dto.PropertyDTO;
+import kz.kaznu.nmm.aglomer.service.dto.PropertyCriteria;
+import kz.kaznu.nmm.aglomer.service.PropertyQueryService;
 
 import io.github.jhipster.web.util.HeaderUtil;
+import io.github.jhipster.web.util.PaginationUtil;
 import io.github.jhipster.web.util.ResponseUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,8 +45,11 @@ public class PropertyResource {
 
     private final PropertyService propertyService;
 
-    public PropertyResource(PropertyService propertyService) {
+    private final PropertyQueryService propertyQueryService;
+
+    public PropertyResource(PropertyService propertyService, PropertyQueryService propertyQueryService) {
         this.propertyService = propertyService;
+        this.propertyQueryService = propertyQueryService;
     }
 
     /**
@@ -84,12 +95,28 @@ public class PropertyResource {
     /**
      * {@code GET  /properties} : get all the properties.
      *
+     * @param pageable the pagination information.
+     * @param criteria the criteria which the requested entities should match.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of properties in body.
      */
     @GetMapping("/properties")
-    public List<PropertyDTO> getAllProperties() {
-        log.debug("REST request to get all Properties");
-        return propertyService.findAll();
+    public ResponseEntity<List<PropertyDTO>> getAllProperties(PropertyCriteria criteria, Pageable pageable) {
+        log.debug("REST request to get Properties by criteria: {}", criteria);
+        Page<PropertyDTO> page = propertyQueryService.findByCriteria(criteria, pageable);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
+    }
+
+    /**
+     * {@code GET  /properties/count} : count all the properties.
+     *
+     * @param criteria the criteria which the requested entities should match.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the count in body.
+     */
+    @GetMapping("/properties/count")
+    public ResponseEntity<Long> countProperties(PropertyCriteria criteria) {
+        log.debug("REST request to count Properties by criteria: {}", criteria);
+        return ResponseEntity.ok().body(propertyQueryService.countByCriteria(criteria));
     }
 
     /**
@@ -123,11 +150,14 @@ public class PropertyResource {
      * to the query.
      *
      * @param query the query of the property search.
+     * @param pageable the pagination information.
      * @return the result of the search.
      */
     @GetMapping("/_search/properties")
-    public List<PropertyDTO> searchProperties(@RequestParam String query) {
-        log.debug("REST request to search Properties for query {}", query);
-        return propertyService.search(query);
+    public ResponseEntity<List<PropertyDTO>> searchProperties(@RequestParam String query, Pageable pageable) {
+        log.debug("REST request to search for a page of Properties for query {}", query);
+        Page<PropertyDTO> page = propertyService.search(query, pageable);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
 }

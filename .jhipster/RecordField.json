@@ -1,0 +1,48 @@
+{
+    "name": "RecordField",
+    "fields": [
+        {
+            "fieldName": "name",
+            "fieldType": "String",
+            "fieldValidateRules": [
+                "required",
+                "maxlength"
+            ],
+            "fieldValidateRulesMaxlength": "99"
+        },
+        {
+            "fieldName": "description",
+            "fieldType": "String",
+            "fieldValidateRules": [
+                "maxlength"
+            ],
+            "fieldValidateRulesMaxlength": "299"
+        }
+    ],
+    "relationships": [
+        {
+            "relationshipType": "one-to-many",
+            "otherEntityName": "recordValue",
+            "otherEntityRelationshipName": "field",
+            "relationshipName": "recordFieldRecordValue"
+        },
+        {
+            "relationshipType": "many-to-one",
+            "otherEntityName": "recordTemplate",
+            "otherEntityRelationshipName": "recordTemplateRecordField",
+            "relationshipName": "template",
+            "otherEntityField": "id"
+        }
+    ],
+    "changelogDate": "20200224154000",
+    "entityTableName": "record_field",
+    "dto": "mapstruct",
+    "pagination": "no",
+    "service": "serviceImpl",
+    "jpaMetamodelFiltering": false,
+    "fluentMethods": true,
+    "readOnly": false,
+    "clientRootFolder": "storage",
+    "applications": "*",
+    "microserviceName": "storage"
+}
